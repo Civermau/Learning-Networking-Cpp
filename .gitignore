@@ -1,0 +1,38 @@
+## Build artifacts (project-wide)
+*.o
+*.obj
+*.d
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+a.out
+
+## Binaries produced by subprojects
+*/server
+*/client
+Hello-Server/server
+Hello-Server/client
+Server-Echo/server
+Server-Echo/client
+
+## Logs and dumps
+*.log
+core
+core.*
+
+## Tooling / IDE / OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+## Build directories (if introduced later)
+build/
+dist/
+cmake-build-*/
+
