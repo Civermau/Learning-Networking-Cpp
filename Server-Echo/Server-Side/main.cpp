@@ -46,7 +46,14 @@ int main(int argc, char* argv[])
     // properly registered with the OS networking stack. If bind() fails (for example, if the port is already in use or if the process
     // lacks the necessary permissions), the server will not be able to accept connections on the desired port. This step must be done
     // before calling listen() or accept(), as it establishes the identity of the server socket for incoming client connections.
-    bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+    // The bind() function returns 0 on success, indicating that the socket was successfully bound to the specified address and port.
+    // If bind() fails, it returns -1, and the specific error code can be retrieved from errno.
+    // Common reasons for failure include: the port is already in use, insufficient permissions, or invalid address.
+    int err = bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+    if (err){
+        std::cout << "Something went wrong! Error: " << strerror(errno) << std::endl;
+        return 0;
+    }
 
     // The listen() function is called here to mark the server socket (serverSocket) as a passive socket,
     // which means it will be used to accept incoming connection requests from clients. This is a crucial
@@ -80,6 +87,10 @@ int main(int argc, char* argv[])
         char buffer[1024] = { 0 };
         ssize_t n = recv(clientSocket, buffer, sizeof(buffer), 0);
         std::cout << "Message from client: " << buffer << std::endl;
+
+        if (n > 0){
+            send(clientSocket, buffer, n, 0);
+        }
     }
     close(clientSocket);
     close(serverSocket);

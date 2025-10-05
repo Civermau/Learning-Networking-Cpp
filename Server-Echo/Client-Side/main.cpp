@@ -4,6 +4,7 @@
 #include <netinet/in.h> // sockaddr_in, htons, etc.
 #include <ostream>
 #include <sys/socket.h> // socket(), connect(), send(), etc.
+#include <sys/types.h>
 #include <unistd.h>     // close()
 
 int main(int argc, char* argv[])
@@ -32,7 +33,17 @@ int main(int argc, char* argv[])
     serverAddress.sin_port = htons(port); // Port that will be trying to connect client
     serverAddress.sin_addr.s_addr = INADDR_ANY; 
 
-    connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+    // The connect() function is used here to establish a connection from the client socket (clientSocket)
+    // to the server specified by the serverAddress structure. The function attempts to make a connection
+    // to the server's IP address and port. The return value of connect() is 0 on success, indicating that
+    // the connection was successfully established. If connect() fails, it returns -1, and the specific
+    // error code can be retrieved from errno. Common reasons for failure include: the server is not running,
+    // the address is incorrect, the port is not open, or there are network issues.
+    int err = connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+
+    if (err){
+        std::cout << "Something went wrong! Error: " << strerror(errno) << std::endl;
+    }
 
     const char* message = "Hello, server!";
     if (argc > 2) {
@@ -40,6 +51,10 @@ int main(int argc, char* argv[])
     }
 
     send(clientSocket, message, std::strlen(message), 0);
+    char buffer[1024] = { 0 };
+    recv(clientSocket, buffer, sizeof(buffer), 0);
+
+    std::cout << "Echo from server: " << buffer << std::endl;
 
     close(clientSocket);
 
