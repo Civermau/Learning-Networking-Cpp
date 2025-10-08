@@ -12,6 +12,7 @@ a.out
 ## Binaries produced by subprojects
 */server
 */client
+*/game
 Hello-Server/server
 Hello-Server/client
 Server-Echo/server
