@@ -1,7 +1,7 @@
 CXX := g++
 CXXFLAGS := -std=c++17 -O2 -Wall -Wextra -Wpedantic
 
-SRCS := Server-Side/server.cpp Client-Side/client.cpp main.cpp
+SRCS := main.cpp
 TARGET := game
 
 .PHONY: all clean

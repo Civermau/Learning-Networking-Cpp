@@ -53,7 +53,7 @@ inline void setCursorPosition(int x, int y) {
 inline void printOptionsList(int count, ...) {
   auto [x, y] = getConsoleSize();
   int startRow = (y / 2) - (count / 2);
-  int selection = 0;
+  // int selection = 0;
 
   va_list args;
   va_start(args, count);
