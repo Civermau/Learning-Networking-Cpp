@@ -50,6 +50,28 @@
     __raw_mode_enabled = true;
   }
 
+  // Restore original terminal settings (canonical + echo as originally).
+  inline void disableRawMode() {
+    if (!__raw_mode_enabled) return;
+    tcsetattr(STDIN_FILENO, TCSANOW, &__orig_termios);
+    __raw_mode_enabled = false;
+  }
+
+  // Drain any bytes currently buffered on stdin (useful before switching to getline).
+  inline void drainStdinBuffer() {
+    fd_set rfds;
+    struct timeval tv = {0, 0};
+    unsigned char c;
+    while (true) {
+      FD_ZERO(&rfds);
+      FD_SET(STDIN_FILENO, &rfds);
+      int ret = select(STDIN_FILENO + 1, &rfds, nullptr, nullptr, &tv);
+      if (ret <= 0 || !FD_ISSET(STDIN_FILENO, &rfds)) break;
+      ssize_t n = read(STDIN_FILENO, &c, 1);
+      if (n <= 0) break;
+    }
+  }
+
   // Non-blocking poll. Returns -1 if no key. Otherwise returns unsigned char value (0..255).
   inline int getCharNonBlocking() {
     // Use select() with 0 timeout to poll stdin.

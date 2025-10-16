@@ -17,11 +17,9 @@ class Client{
     int port;
 
 public:
-  Client(int port = 7777, int x = 0, int y = 0, const std::string& clientName = "", const std::string& serverIp = "127.0.0.1"){
+  Client(int port = 7777, const std::string& serverIp = "127.0.0.1", const std::string& clientName = ""){
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     name = clientName;
-    position.first = x;
-    position.second = y;  
     this->port = port; 
     
     std::memset(&serverAddress, 0, sizeof(serverAddress)); // zero it for safety
@@ -45,6 +43,25 @@ public:
     }   
   }
 
+  // These lines delete the copy constructor and assignment operator,
+  // which means you cannot make copies of a Client instance. This is
+  // often done to ensure that each Client is unique (has "unique ownership"),
+  // especially when it is managing resources like sockets or connections
+  // that cannot be safely duplicated.
+  //
+  // For example, both of these will cause a compile error:
+  //   Client c1(1234);
+  //   Client c2 = c1;      // ERROR: can't copy-construct
+  //   Client c3(5678);
+  //   c3 = c1;             // ERROR: can't assign
+  //
+  // Also, if you try to pass a Client object to a function by value,
+  // it will try to make a copy, and will also fail:
+  //   void doSomething(Client c);   // ERROR!
+  //   doSomething(c1);              // ERROR: copy is deleted
+  // So you should always use a reference or pointer instead:
+  //   void doSomething(Client& c);      // ok
+  //   void doSomething(Client* c);      // ok
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
 }; 

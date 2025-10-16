@@ -10,6 +10,8 @@
 
 #include "../ui.h"
 
+// * ----------------------------------- Client Socket class for managing the clients
+
 class ClientSocket {
 public:
   // Maybe use socket ID?
@@ -38,6 +40,8 @@ public:
 
   void appendToChatBuffer(const std::string &msg) { chatBuffer += msg; }
 };
+
+// * ------------------------------------- Serveer class
 
 class Server {
   int port;
@@ -78,6 +82,7 @@ public:
   }
   // Example async methods using std::thread (simulate async in a simple way)
 
+  // * ------------------------------------------------- Accept Clients Async
   void asyncAcceptClients() {
     std::thread([this]() {
       while (true) {
@@ -100,6 +105,8 @@ public:
     }).detach();
   }
 
+
+// * ------------------------------------------------- Broadcaste messages Async
   void asyncBroadcastMessages() {
     std::thread([this]() {
       while (true) {
@@ -142,6 +149,25 @@ public:
     close(serverSocket);
   }
 
+  // These lines delete the copy constructor and assignment operator,
+  // which means you cannot make copies of a Server instance. This is
+  // often done to ensure that each Server is unique (has "unique ownership"),
+  // especially when it is managing resources like sockets or threads
+  // that cannot be safely duplicated.
+  //
+  // For example, both of these will cause a compile error:
+  //   Server s1(1234);
+  //   Server s2 = s1;      // ERROR: can't copy-construct
+  //   Server s3(5678);
+  //   s3 = s1;             // ERROR: can't assign
+  //
+  // Also, if you try to pass a Server object to a function by value,
+  // it will try to make a copy, and will also fail:
+  //   void doSomething(Server s);   // ERROR!
+  //   doSomething(s1);              // ERROR: copy is deleted
+  // So you should always use a reference or pointer instead:
+  //   void doSomething(Server& s);      // ok
+  //   void doSomething(Server* s);      // ok
   Server(const Server&) = delete;
   Server& operator=(const Server&) = delete;
 };
